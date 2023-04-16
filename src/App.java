@@ -12,7 +12,7 @@ public class App {
         // Eliminar archivos antiguos
         Files.deleteIfExists(Paths.get(basePath + "\\src\\ParserLexer\\sym.java"));
         Files.deleteIfExists(Paths.get(basePath + "\\src\\ParserLexer\\Lexer.java"));
-        Files.deleteIfExists(Paths.get(basePath + "\\src\\ParserLexer\\Parser.java"));
+        Files.deleteIfExists(Paths.get(basePath + "\\src\\ParserLexer\\parser.java"));
 
         // Crear archivos nuevos
         main.initLexerParser(fullPathLexer, fullPathParser);
@@ -31,7 +31,7 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception{
-        //GenerarLexerParser();
+        GenerarLexerParser();
         PruebasLexerParser();
     }
 }

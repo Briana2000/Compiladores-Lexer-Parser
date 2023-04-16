@@ -6,6 +6,7 @@
 package ParserLexer;
 
 import java_cup.runtime.*;
+import java.util.Stack;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -349,11 +350,23 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
     Lexer lex;
+    private Stack<SymbolTable> symbolTableStack = new Stack<>();
+    private SymbolTable currentTable;
 
     @SuppressWarnings("deprecation")
     public parser(Lexer lex){
         this.lex = lex;
         this.symbolFactory = new DefaultSymbolFactory();
+        this.currentTable = lex.getSymbolTable();
+    }
+
+    private void pushSymbolTable() {
+        SymbolTable newTable = new SymbolTable(currentTable);
+        symbolTableStack.push(currentTable);
+        currentTable = newTable;
+    }
+    private void popSymbolTable() {
+        currentTable = symbolTableStack.pop();
     }
 
 
@@ -516,7 +529,11 @@ class CUP$parser$actions {
           case 14: // tipoVar ::= INT 
             {
               Object RESULT =null;
+
 		 System.out.println("Tipo int"); 
+
+		 System.out.println("Encontré int"); 
+
               CUP$parser$result = parser.getSymbolFactory().newSymbol("tipoVar",1, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

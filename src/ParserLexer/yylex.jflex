@@ -23,6 +23,7 @@ import java_cup.runtime.*;
 %{
    //Código de usuario
     StringBuffer string = new StringBuffer(); // para manejar los strings
+    private SymbolTable symbolTable = new SymbolTable(null); // Tabla de símbolos
 
     private Symbol symbol(int type) {
         return new Symbol(type, yyline+1, yycolumn+1);
@@ -30,6 +31,10 @@ import java_cup.runtime.*;
 
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline+1, yycolumn+1, value);
+    }
+
+    public SymbolTable getSymbolTable(){
+        return this.symbolTable;
     }
 %}
 
@@ -50,8 +55,8 @@ ComentarioDocumentacion     = "/_" ((\.|\n)*?) "_/"
 
 Letra               = [a-zA-Z]
 Id                  = [a-zA-Z_] [a-zA-Z0-9_]*
-NumEntero           = ([+-]  [1-9] [0-9]*) | ([1-9] [0-9]*) | 0
-NumEnteroPositivo   = [1-9] [0-9]*
+NumEntero           = [+-] [1-9] [0-9]* | [1-9][0-9]* | 0
+NumEnteroPositivo   = [1-9][0-9]*
 NumDecimal          = [0-9]+\.[0-9]+
 
 %state CADENA 
@@ -106,12 +111,11 @@ NumDecimal          = [0-9]+\.[0-9]+
 
 
 <YYINITIAL> {
-    
-    
+
     ////// Literales ///////
-    {NumEnteroPositivo}  {return symbol(sym.ENTERO_POSITIVO, Integer.parseInt(yytext()));}
     {NumEntero}  {return symbol(sym.ENTERO, Integer.parseInt(yytext()));}
     {NumDecimal} {return symbol(sym.DECIMAL, new Float(yytext().substring(0,yylength()-1)));}
+    {NumEnteroPositivo}  {return symbol(sym.ENTERO_POSITIVO, Integer.parseInt(yytext()));}
     \" {string.setLength(0); yybegin(CADENA);}
 
     ////// Operadores ///////
@@ -155,6 +159,18 @@ NumDecimal          = [0-9]+\.[0-9]+
 
     {EspacioBlanco}  { /* Ignorar */ }
     {Comentario}     { /* Ignorar */ }
+
+    ////// Identificador ///////
+    {Id} /*{
+        Object value = symbolTable.get(yytext());
+        if (value == null) {
+            //El símbolo no está en la tabla actual
+            value = "undefined";
+        }
+        // Retorne un nuevo símbolo
+        return new Symbol(sym.ID, value);
+    }*/
+    {return symbol(sym.ID, yytext());}
 }
 
 /*Esto es para el manejo de errores.
